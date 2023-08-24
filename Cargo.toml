@@ -5,7 +5,8 @@ version = "0.1.0"
 edition = "2021"
 rust-version = "1.71.1"
 license = "ISC"
-readme = "README.md"
 repository = "https://github.com/stubit-rs/stubit"
+categories = ["data-structures", "encoding", "memory-management", "rust-patterns"]
+keywords = ["bit", "bits", "bitvec"]
 
 [dependencies]
