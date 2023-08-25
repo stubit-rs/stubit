@@ -232,3 +232,64 @@ impl Bits {
     convert_bits!(to_i128, i128);
     convert_bits!(to_isize, isize);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_conversions() {
+        assert_eq!(Bits::from(u8::MAX).to_u8(), Ok(u8::MAX));
+        assert_eq!(Bits::from(u8::MIN).to_u8(), Ok(u8::MIN));
+        assert_eq!(Bits::from(0u16).to_u8(), Err(0));
+
+        assert_eq!(Bits::from(u16::MAX).to_u16(), Ok(u16::MAX));
+        assert_eq!(Bits::from(u16::MIN).to_u16(), Ok(u16::MIN));
+        assert_eq!(Bits::from(0u32).to_u16(), Err(0));
+
+        assert_eq!(Bits::from(u32::MAX).to_u32(), Ok(u32::MAX));
+        assert_eq!(Bits::from(u32::MIN).to_u32(), Ok(u32::MIN));
+        assert_eq!(Bits::from(0u64).to_u32(), Err(0));
+
+        assert_eq!(Bits::from(u64::MAX).to_u64(), Ok(u64::MAX));
+        assert_eq!(Bits::from(u64::MIN).to_u64(), Ok(u64::MIN));
+        assert_eq!(Bits::from(0u128).to_u64(), Err(0));
+
+        assert_eq!(Bits::from(u128::MAX).to_u128(), Ok(u128::MAX));
+        assert_eq!(Bits::from(u128::MIN).to_u128(), Ok(u128::MIN));
+
+        assert_eq!(Bits::from(usize::MAX).to_usize(), Ok(usize::MAX));
+        assert_eq!(Bits::from(usize::MIN).to_usize(), Ok(usize::MIN));
+        assert_eq!(Bits::from(0u128).to_usize(), Err(0));
+
+        assert_eq!(Bits::from(i8::MAX).to_i8(), Ok(i8::MAX));
+        assert_eq!(Bits::from(i8::MIN).to_i8(), Ok(i8::MIN));
+        assert_eq!(Bits::from(0i16).to_i8(), Err(0));
+
+        assert_eq!(Bits::from(i16::MAX).to_i16(), Ok(i16::MAX));
+        assert_eq!(Bits::from(i16::MIN).to_i16(), Ok(i16::MIN));
+        assert_eq!(Bits::from(0i32).to_i16(), Err(0));
+
+        assert_eq!(Bits::from(i32::MAX).to_i32(), Ok(i32::MAX));
+        assert_eq!(Bits::from(i32::MIN).to_i32(), Ok(i32::MIN));
+        assert_eq!(Bits::from(0i64).to_i32(), Err(0));
+
+        assert_eq!(Bits::from(i64::MAX).to_i64(), Ok(i64::MAX));
+        assert_eq!(Bits::from(i64::MIN).to_i64(), Ok(i64::MIN));
+        assert_eq!(Bits::from(0i128).to_i64(), Err(0));
+
+        assert_eq!(Bits::from(i128::MAX).to_i128(), Ok(i128::MAX));
+        assert_eq!(Bits::from(i128::MIN).to_i128(), Ok(i128::MIN));
+
+        assert_eq!(Bits::from(isize::MAX).to_isize(), Ok(isize::MAX));
+        assert_eq!(Bits::from(isize::MIN).to_isize(), Ok(isize::MIN));
+        assert_eq!(Bits::from(0i128).to_isize(), Err(0));
+    }
+
+    #[test]
+    fn test_bits_macro() {
+        assert_eq!(bits![1, 1, 1, 1, 1, 1, 1, 1].to_string(), "11111111");
+        assert_eq!(bits![1, 1, 1, 1, 1, 1, 1, 1].to_u8(), Ok(255));
+        assert_eq!(bits![1, 1, 1, 1, 1, 1, 1, 1].to_i8(), Ok(-1));
+    }
+}
