@@ -4,19 +4,21 @@
 //! [![Documentation](https://docs.rs/stubit/badge.svg)](https://docs.rs/stubit)
 //!
 //! Stupid, because it's just a wrapper arround `Vec<bool>` with some helper functions.
-//! 
+//!
 //! ```
-//! let mut data = bits![0, 0, 0, 1, 1, 1, 0, 0];
-//! assert_eq!(data.to_u8(), Ok(28));
-//! 
+//! # use stubit::*;
+//! let mut data = bits![1, 1, 1, 0];
+//! assert_eq!(data.to_u8(), Ok(14));
+//!
 //! data.push(true);
 //! data.push(0);
 //! data.push(1);
-//! assert_eq!(&data.to_string(), "00011100101");
-//! 
-//! data.append(vec![1, 1, 0, 1]);
-//! assert_eq!(data.to_u8(), Err(93));
-//! assert_eq!(data.to_u16(), Ok(3677));
+//! assert_eq!(&data.to_string(), "1110101");
+//!
+//! let data = Bits::from(255);
+//! assert_eq!(data.to_i32(), Ok(255));
+//! assert_eq!(data.to_u8(), Err(255));
+//! assert_eq!(data.to_i8(), Err(-1));
 //! ```
 
 use std::{
@@ -138,6 +140,7 @@ impl_into_bits!(u64);
 impl_into_bits!(u128);
 impl_into_bits!(usize);
 
+/// Operate on bits.
 impl Bits {
     pub fn push(&mut self, value: impl Into<Bit>) {
         self.0.push(value.into());
@@ -191,40 +194,41 @@ impl Display for Bits {
 
 macro_rules! convert_bits {
     ($n:ident, $t:ty) => {
-        impl Bits {
-            /// Converts bits to an integer.
-            ///
-            /// # Errors
-            ///
-            /// Returns the value as an error, if there are more bits than fit into the output type.
-            pub fn $n(&self) -> Result<$t, $t> {
-                let mut val = <$t>::default();
-                let mut bits = self.clone();
-                bits.reverse();
+        /// Converts bits to an integer.
+        ///
+        /// # Errors
+        ///
+        /// Returns the value as an error, if there are more bits than fit into the output type.
+        pub fn $n(&self) -> Result<$t, $t> {
+            let mut val = <$t>::default();
+            let mut bits = self.clone();
+            bits.reverse();
 
-                for (i, bit) in bits.iter().enumerate() {
-                    if i >= <$t>::BITS as usize {
-                        return Err(val);
-                    }
-
-                    let bit = <$t>::from(*bit);
-                    val |= bit << i;
+            for (i, bit) in bits.iter().enumerate() {
+                if i >= <$t>::BITS as usize {
+                    return Err(val);
                 }
-                Ok(val)
+
+                let bit = <$t>::from(*bit);
+                val |= bit << i;
             }
+            Ok(val)
         }
     };
 }
 
-convert_bits!(to_u8, u8);
-convert_bits!(to_u16, u16);
-convert_bits!(to_u32, u32);
-convert_bits!(to_u64, u64);
-convert_bits!(to_u128, u128);
-convert_bits!(to_usize, usize);
-convert_bits!(to_i8, i8);
-convert_bits!(to_i16, i16);
-convert_bits!(to_i32, i32);
-convert_bits!(to_i64, i64);
-convert_bits!(to_i128, i128);
-convert_bits!(to_isize, isize);
+/// Convert bits to integer types.
+impl Bits {
+    convert_bits!(to_u8, u8);
+    convert_bits!(to_u16, u16);
+    convert_bits!(to_u32, u32);
+    convert_bits!(to_u64, u64);
+    convert_bits!(to_u128, u128);
+    convert_bits!(to_usize, usize);
+    convert_bits!(to_i8, i8);
+    convert_bits!(to_i16, i16);
+    convert_bits!(to_i32, i32);
+    convert_bits!(to_i64, i64);
+    convert_bits!(to_i128, i128);
+    convert_bits!(to_isize, isize);
+}
