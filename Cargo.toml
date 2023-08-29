@@ -7,6 +7,6 @@ license-file = "LICENSE"
 description = "stupid bit library"
 repository = "https://github.com/stubit-rs/stubit"
 categories = ["data-structures", "encoding", "memory-management", "rust-patterns"]
-keywords = ["bit", "bits", "bitvec"]
+keywords = ["bit", "bits", "bitvec", "stupid"]
 
 [dependencies]

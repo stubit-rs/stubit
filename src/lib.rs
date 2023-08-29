@@ -3,22 +3,35 @@
 //! [![Crates.io](https://img.shields.io/crates/v/stubit)](https://crates.io/crates/stubit)
 //! [![Documentation](https://docs.rs/stubit/badge.svg)](https://docs.rs/stubit)
 //!
-//! Stupid, because it's just a wrapper arround `Vec<bool>` with some helper functions.
+//! Simple bit manipulation for **stupid** people like **me**.
+//! 
+//! Focus on ease of use and simplicity.
+//! 
+//! ## Bit
+//! 
+//! Represents a single bit. Currently implemented with `bool`.
+//! 
+//! Implements convertions from and into all integers.
+//! 
+//! ## Bits
+//! 
+//! Represents a vector of `Bit`s.
+//! 
+//! Implements convenient convertions from and into all integers.
 //!
 //! ```
 //! # use stubit::*;
 //! let mut data = bits![1, 1, 1, 0];
 //! assert_eq!(data.to_u8(), Ok(14));
+//! ```
 //!
-//! data.push(true);
-//! data.push(0);
-//! data.push(1);
-//! assert_eq!(&data.to_string(), "1110101");
-//!
-//! let data = Bits::from(255);
-//! assert_eq!(data.to_i32(), Ok(255));
-//! assert_eq!(data.to_u8(), Err(255));
-//! assert_eq!(data.to_i8(), Err(-1));
+//! If there are more `Bit`s in `Bits` than the integer can hold, it returns the value as `Err`.
+//! 
+//! ```
+//! # use stubit::*;
+//! let data = Bits::from(260i32);
+//! assert_eq!(data.to_i32(), Ok(260));
+//! assert_eq!(data.to_i8(), Err(4));
 //! ```
 
 use std::{
@@ -26,23 +39,10 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
+/// Represents a single bit.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[non_exhaustive]
 pub struct Bit(bool);
-
-impl Deref for Bit {
-    type Target = bool;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Bit {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
 
 impl From<bool> for Bit {
     fn from(value: bool) -> Self {
@@ -95,6 +95,37 @@ impl Display for Bit {
     }
 }
 
+/// A contiguous growable vector of [`Bit`]s with some helper functions to convert from and into integers.
+///
+/// # Example
+///
+/// ```
+/// # use stubit::*;
+/// let mut bits = Bits::new();
+/// bits.push(1);
+/// bits.push(0);
+/// bits.push(true);
+///
+/// assert_eq!(bits.pop(), Some(Bit::from(1)));
+/// ```
+///
+/// The [`bits!`] macro is provided for convenient initialization:
+///
+/// ```
+/// # use stubit::*;
+/// let bits1 = bits![1, 0, 1, 0];
+/// let bits2 = Bits::from(vec![1, 0, 1, 0]);
+///
+/// assert_eq!(bits1, bits2);
+/// ```
+///
+/// [`Bits`] also provides some functions to convert from and into integers.
+///
+/// ```
+/// # use stubit::*;
+/// let ten = Bits::from(10u8);
+/// assert_eq!(&ten.to_string(), "00001010");
+/// ```
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[non_exhaustive]
 pub struct Bits(Vec<Bit>);
@@ -142,20 +173,37 @@ impl_into_bits!(usize);
 
 /// Operate on bits.
 impl Bits {
+    /// Appends an element to the back of a collection.
     pub fn push(&mut self, value: impl Into<Bit>) {
         self.0.push(value.into());
     }
 
+    /// Removes the last element from a vector and returns it, or `None` if it is empty.
     pub fn pop(&mut self) -> Option<Bit> {
         self.0.pop()
     }
 
+    /// Copies all the elements of `other` into `self`.
     pub fn append(&mut self, other: impl Into<Bits>) {
         let mut bits: Bits = other.into();
         self.0.append(&mut bits.0);
     }
 }
 
+/// Creates [`Bits`] containing the arguments.
+///
+/// `bits!` allows to easily create vector of [`Bit`]s using a syntax simmilar to [`vec!`].
+///
+/// ```
+/// # use stubit::*;
+/// let a = bits![1, 0, 0, 1, 0, 1, 1, 0];
+/// let b = bits![true, false, false, true, false, true, true, false];
+/// assert_eq!(a, b);
+/// ```
+///
+/// See[`Bits::push`] for more info.
+///
+/// [`vec!`]: https://doc.rust-lang.org/stable/std/macro.vec.html
 #[macro_export]
 macro_rules! bits {
     ( $( $x:expr ),* ) => {
