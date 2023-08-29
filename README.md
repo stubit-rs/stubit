@@ -8,7 +8,6 @@
 Stupid, because it's just a wrapper arround `Vec<bool>` with some helper functions.
 
 ```rust
-# use stubit::*;
 let mut data = bits![1, 1, 1, 0];
 assert_eq!(data.to_u8(), Ok(14));
 
