@@ -11,18 +11,19 @@
 //! 
 //! Represents a single bit. Currently implemented with `bool`.
 //! 
-//! Implements convertions from and into all integers.
+//! Implements conversions from and into all integers.
 //! 
 //! ## Bits
 //! 
 //! Represents a vector of `Bit`s.
 //! 
-//! Implements convenient convertions from and into all integers.
+//! Implements convenient conversions from and into all integers.
 //!
 //! ```
 //! # use stubit::*;
-//! let mut data = bits![1, 1, 1, 0];
-//! assert_eq!(data.to_u8(), Ok(14));
+//! let mut data = bits![0, 0, 1];
+//! data.push(0);
+//! assert_eq!(data.to_u8(), Ok(2));
 //! ```
 //!
 //! If there are more `Bit`s in `Bits` than the integer can hold, it returns the value as `Err`.
